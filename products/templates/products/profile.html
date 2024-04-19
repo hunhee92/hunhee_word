@@ -1,0 +1,210 @@
+{% extends "base.html" %} {% load static %} {% block contents %}
+
+{% if profile != request.user %}
+<p>{{profile.nickname}}님의 프로필</p>
+{% else %}
+<p>안녕하세요 {{profile.nickname}}</p>
+<p>가입일:{{profile.date_joined}}</p>
+ {%endif%}
+{% if profile.image%}
+<p>프로필사진<img src="{{ profile.image.url }}" alt="Product Image" style="width: 150px; height: 150px; "/></p>
+{% else%}
+<p>프로필사진<img src="{% static '/images/user.png' %}" style="width: 150px; height: 150px;"  /></p>
+{% endif %}
+</br></br>
+{% if profile != request.user %}
+
+
+{%else%}
+      <button
+        type="button"
+        data-bs-toggle="modal"
+        data-bs-target="#exampleModal"
+        class="btn btn-primary"
+      >
+        프로필 사진 수정
+      </button>
+      {%endif%}
+</br></br></br></br></br>
+{% if profile != request.user %}
+{% if profile in request.user.following.all %}
+<form action="{% url 'accounts:unfollow_user' profile.id %}" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ request.path }}">
+    <button type="submit">언팔로우</button>
+</form>
+{% else %}
+<form action="{% url 'accounts:follow_user' profile.id %}" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ request.path }}">
+    <button type="submit">팔로우</button>
+</form>
+{%endif%}
+{%endif%}
+
+
+
+
+{% comment %} 탭 {% endcomment %}
+
+<ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+  <li class="nav-item" role="presentation">
+    <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">
+    {% if profile != request.user %}
+    {{profile.nickname}}님이 등록한 물품
+    {%else%}
+    내가 등록한 물품
+    {%endif%}</button>
+
+  </li>
+  {% if profile != request.user %}
+  {%else%}
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">찜한 물품</button>
+  </li>
+  {%endif%}
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="pills-contact-tab" data-bs-toggle="pill" data-bs-target="#pills-contact" type="button" role="tab" aria-controls="pills-contact" aria-selected="false">{{profile.nickname}}님의 팔로잉</button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="pills-follower-tab" data-bs-toggle="pill" data-bs-target="#pills-follower" type="button" role="tab" aria-controls="pills-follower" aria-selected="false" >팔로워</button>
+  </li>
+</ul>
+<div class="tab-content" id="pills-tabContent">
+  <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" tabindex="0">
+  <h2>등록한 물품</h2>
+
+<div class="container">
+  <div class="row">
+    {% for account in account %}     
+    <div class="col-md-3 mb-4">
+      <div class="card" style="width: 18rem;">
+        <a href="{%url 'products:post_detail' account.id%}">
+        <img src="{{ account.image.url }}" class="card-img-top" alt="{{ product.title }}" style="width: 280px; height: 200px; object-fit: cover;">
+        </a>
+        <div class="card-body">
+          <h5 class="card-title">{{ account.title }}</h5>
+          <p class="card-text">{{ account.content }}</p>
+          <p class="card-text">{{ account.price }}원</p>
+           <p>찜수 {{account.like_count}} 조회수:{{account.post_count}}</p>
+        </div>
+      </div>
+    </div>
+              {% empty %}
+              <li>등록한 상품이 없습니다.</li>
+    {% if forloop.counter|divisibleby:4 and not forloop.last %}
+  </div>
+  <div class="row">
+    {% endif %}
+    {% endfor %}
+  </div>
+</div>
+  </div>
+<div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab" tabindex="0">
+  <h2>찜한 물품</h2>
+  <div class="container">
+    <div class="row">
+      {% for product in profile.like.all %}
+        <div class="col-md-3 mb-4">
+          <div class="card" style="width: 18rem;">
+            <a href="{% url 'products:post_detail' product.id %}">
+              <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.title }}" style="width: 280px; height: 200px; object-fit: cover;">
+            </a>
+            <div class="card-body">
+              <h5 class="card-title">{{ product.title }}</h5>
+              <p class="card-text">{{ product.content }}</p>
+              <p class="card-text">{{ product.price }}원</p>
+              <p>찜수: {{ product.like_count }} 조회수: {{ product.post_count }}</p>
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <div class="col-md-12">
+          <p>찜한 상품이 없습니다.</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+  <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab" tabindex="0">
+   <h2>{{profile.nickname}}가 팔로잉하는 사람들 - {{ profile.following.count }}명</h2>
+    <ul>
+        {% for follower in following %}
+            <li>
+                {{ follower.nickname }} 
+            </li>
+        {% empty %}
+            <li>팔로잉하는 사람이 없습니다.</li>
+        {% endfor %}
+    </ul>
+  </div>
+  <div class="tab-pane fade" id="pills-follower" role="tabpanel" aria-labelledby="pills-contact-tab" tabindex="0">
+   <h2>{{profile.nickname}}의 팔로워 - {{ profile.followers.count }}명  </h2>
+    <ul>
+        {% for follower in followers %}
+            <li>
+                {{ follower.nickname }}  
+            </li>
+        {% empty %}
+            <li>팔로잉하는 사람이 없습니다. </li>
+        {% endfor %}
+    </ul>
+  </div>
+</div>
+
+
+
+
+
+
+
+{% comment %} 프로필사진 수정 모달 {% endcomment %}
+ <div
+        class="modal fade"
+        id="exampleModal"
+        tabindex="-1"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">
+                프로필 사진 수정
+              </h1>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <form
+                action="{%url 'accounts:u_update' user.id %}"
+                id="u_update"
+                method="POST"
+                enctype="multipart/form-data"
+              >
+                {% csrf_token %}
+                {{c_form.image}}
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+              <button type="submit" class="btn btn-primary" form="u_update">
+                수정하기
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+{% endblock contents %}

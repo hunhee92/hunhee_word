@@ -1,3 +1,86 @@
-{% extends "base.html" %} 
+{% extends "base.html" %} {% load humanize %}
 {% block contents %} 
-{% endblock contents %}
+
+</br></br>
+<div id="carouselExampleCaptions" class="carousel slide">
+  <div class="carousel-indicators">
+    <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+    <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>
+    <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" aria-label="Slide 3"></button>
+  </div>
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+          <img src="https://i.pinimg.com/originals/d3/72/40/d37240de6579b276bb12ac0729feee98.jpg" class="d-block w-100" alt="..."
+      style="height: 400px; ">
+      <div class="carousel-caption d-none d-md-block">
+        <h5 style="color:black">오늘도 즐거운 쇼핑</h5>
+        <p style="color:black">스파르타 마켓에서 득템 하십쇼.</p>
+      </div>
+    </div>
+  </div>
+  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</div>
+</br></br></br></br></br></br>
+<h1>인기 게시물</h1><div style="text-align: center;" ><a href="{%url 'products:like_post' %}"  class="btn btn-primary" >인기 게시물 더보기</a></div>
+</br></br></br>
+<div class="container">
+  <div class="row">
+    {% for product in products %}
+    <div class="col-md-3 mb-4">
+      <div class="card" style="width: 18rem">
+        <a href="{%url 'products:post_detail' product.id%}" 
+              ><img
+          src="{{ product.image.url }}"
+          class="card-img-top"
+          alt="{{ products.title }}"
+          style="width: 280px; height: 200px; "
+        /></a>
+        <div class="card-body">
+          <h5 class="card-title" ">
+            제목 {{product.title}}
+          </h5>
+          <p class="card-text">{{ product.content|truncatechars:50 }}</p>
+          <p class="card-text">{{ product.price|intcomma }}원</p>
+          <p>찜수 {{product.like_count}}조회수:{{product.post_count}}</p>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+</br></br></br></br></br></br>
+<h1>최신 게시물</h1><div style="text-align: center;" ><a href="{%url 'products:new_post' %}" class="btn btn-primary" >최신 게시물 더보기</a></div>
+
+
+</br></br></br>
+<div class="container">
+  <div class="row">
+    {% for new_product in new_product %}
+    <div class="col-md-3 mb-4">
+      <div class="card" style="width: 18rem">
+        <a href="{%url 'products:post_detail' new_product.id%}"><img
+          src="{{ new_product.image.url }}"
+          class="card-img-top"
+          alt="{{ new_product.title }}"
+          style="width: 280px; height: 200px; "
+        /></a>
+        <div class="card-body">
+          <h5 class="card-title">{{ new_product.title }}</h5>
+          <p class="card-text">{{ new_product.content|truncatechars:50 }}</p>
+          <p class="card-text">{{ new_product.price|intcomma }}원</p>
+          <p>찜수 {{new_product.like_count}} 조회수:{{new_product.post_count}}</p>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+프로덕트 페이지 {% endblock contents %}

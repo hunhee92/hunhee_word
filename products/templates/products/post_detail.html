@@ -1,1 +1,92 @@
-{{% extends "base.html" %}} {% block content %} {% endblock content %}
+{% extends "base.html" %} {% load static %} {% load humanize %} 
+{% block contents %}
+
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-md-8 mx-auto">
+      <div class="card shadow">
+        <div class="card-header">
+          <h1 class="card-title text-center">{{ product.title }}</h1>
+        </div>
+        <div class="card-body">
+          {% if product.image %}
+          <img
+            src="{{ product.image.url }}"
+            alt="Product Image"
+            class="img-fluid mb-3"
+          />
+          {% endif %}
+          <p class="card-text">{{ product.content }}</p></br></br>
+          <p class="card-text">가격: {{ product.price|intcomma }}원</p>
+        </div>
+        <div class="card-footer">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <a
+                href="{% url 'products:add_like' product.id %}"
+                class="btn btn-primary"
+                >찜하기 {{ product.like_count }}</a
+              >
+              <a
+                href="{% url 'products:profile' product.user.id %}"
+                class="btn btn-secondary"
+                >작성자: {{ product.user.username }}</a
+              >
+            </div>
+            {% if product.user == request.user %}
+            <div>
+              <form
+                action="{% url 'products:delete' product.id %}"
+                method="POST"
+                class="d-inline-block"
+              >
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">삭제</button>
+              </form>
+              <a
+                href="{% url 'products:update' product.id %}"
+                class="btn btn-primary"
+                >수정하기</a
+              >
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</br></br></br>
+<h1 style="text-align: center">작성자의 다른 게시글</h1>
+<div class="container mt-5">
+  <div class="row">
+    {% for other_product in other_products %}
+    <div class="col-md-3 mb-4">
+      <div class="card shadow" style="width: 18rem">
+        <a href="{% url 'products:post_detail' other_product.id %}">
+          <img
+            src="{{ other_product.image.url }}"
+            class="card-img-top"
+            alt="Product Image"
+            style="height: 200px"
+          />
+        </a>
+        <div class="card-body">
+          <h5 class="card-title">{{ other_product.title }}</h5>
+          <p class="card-text">{{ other_product.content|truncatechars:50 }}</p>
+          <p class="card-text">가격: {{ other_product.price|intcomma }}원</p>
+          <p class="card-text">찜수: {{ other_product.like_count }}조회수 {{other_product.post_count}}</p>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-md-12">
+      <div class="alert alert-info text-center" role="alert">
+        작성자의 다른 글이 없습니다.
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock contents %}

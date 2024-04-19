@@ -111,6 +111,7 @@
                 action="{%url 'accounts:signup'%}"
                 method="POST"
                 id="signup"
+                enctype="multipart/form-data"
               >
                 {%csrf_token%} {{c_form.as_p}}
               </form>

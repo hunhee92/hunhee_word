@@ -8,4 +8,4 @@ class ProductForm(forms.ModelForm):
         model = Products
         # fields = '__all__'  # 모든 필드를 포함하고 싶은 경우
         # fields = []  # 특정 필드만 포함하고 싶은 경우
-        exclude = ['likes', 'post_count']  # 특정 필드를 제외하고 싶은 경우
+        exclude = ['likes', 'post_count', "user"]  # 특정 필드를 제외하고 싶은 경우

@@ -1,2 +1,10 @@
-{%extends "base.html"%} {% block content %}게시글 {{foms.as_p}} {% endblock
-content %}
+{% extends "base.html" %} {% block contents %}
+<form
+  action="{%url 'products:create'%}"
+  method="POST"
+  enctype="multipart/form-data"
+>
+  {%csrf_token%} {{forms.as_p}}
+  <button type="submit">작성하기</button>
+</form>
+{% endblock contents %}

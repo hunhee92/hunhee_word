@@ -1,1 +1,39 @@
-{{% extends "base.html" %}} {% block content %} {% endblock content %}
+{% extends "base.html" %} {% load humanize %}
+{% block contents %} 
+
+</br></br></br></br></br></br></br>
+<h1 style="text-align: center;">게시판</h1>
+</br></br>
+<p style="text-align: center; font-size:25px;">
+<a href="{%url 'products:new_post' %}" class="btn btn-primary">최신순</a> 
+<a href="{%url 'products:like_post' %}" class="btn btn-primary">인기순</a>
+</p>
+</br></br></br>
+<div class="container">
+  <div class="row">
+    {% for product in products %}
+    <div class="col-md-3 mb-4">
+      <div class="card" style="width: 18rem">
+        <a href="{%url 'products:post_detail' product.id%}" 
+              ><img
+          src="{{ product.image.url }}"
+          class="card-img-top"
+          alt="{{ products.title }}"
+          style="width: 280px; height: 200px; "
+        /></a>
+        <div class="card-body">
+          <h5 class="card-title" ">
+            제목 {{product.title}}
+          </h5>
+          <p class="card-text">{{ product.content|truncatechars:50 }}</p>
+          <p class="card-text">{{ product.price|intcomma }}원</p>
+          <p>찜수 {{product.like_count}} 조회수 {{product.post_count}}</p>
+        </div>
+      </div>
+    </div>
+     {% empty %}
+     <h2  style="text-align: center;">{{msg}}.</h2>
+    {% endfor %}
+  </div>
+</div>
+{% endblock contents %}

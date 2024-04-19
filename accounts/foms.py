@@ -3,6 +3,13 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django import forms
 from django.utils.translation import gettext_lazy as _
+from .models import CustomUser
+
+
+class ProfileImageForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = ['image']
 
 
 class CustomUserCreationForm(UserCreationForm):
